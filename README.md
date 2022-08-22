@@ -17,4 +17,7 @@ vnstat2 luci-app-vnstat2 collectd
 nlbwmon luci-app-nlbwmon
 restic restic-rest-server
 luci-app-sqm sqm-scripts sqm-scripts-extra
-etherwake postfix
+etherwake postfix sysstat
+
+
+**!!! not tested extensively !!! use at own risk**
