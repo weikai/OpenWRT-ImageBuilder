@@ -8,7 +8,7 @@ git-http
 fdisk cfdisk resize2fs
 kmod-fs-btrfs btrfs-progs
 kmod-wireguard luci-app-wireguard luci-proto-wireguard wireguard-tools
-block-mount openssl-util ntpclient
+block-mount blkid openssl-util ntpclient
 openvpn-openssl luci-app-openvpn
 acme luci-app-acme apache apache-mod-http2 apache-mod-proxy apache-mod-proxy-html apache-mod-ssl apache-mod-session-crypto apache-utils 
 adguardhome
