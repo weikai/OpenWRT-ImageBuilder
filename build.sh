@@ -61,8 +61,9 @@ for line in "${images[@]}"; do
         PACKAGES=$(echo "$PACKAGES_BASIC $PACKAGES_EXTRA"|xargs)
     fi
 
-    cd "$buildir" && \
-    make image PROFILE=$PROFILE PACKAGES=$PACKAGES
+    #cd "$buildir" && \
+    make image PROFILE=$PROFILE PACKAGES="$PACKAGES"
+    #echo "make image PROFILE=$PROFILE PACKAGES=$PACKAGES"
     
 
     
