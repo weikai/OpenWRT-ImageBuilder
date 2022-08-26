@@ -61,7 +61,7 @@ jobs:
           df -h
           
       - name: Build
-        run: /bin/bash build.sh
+        run: /bin/bash build.sh all
       
       - name: Organize files
         id: organizefiles

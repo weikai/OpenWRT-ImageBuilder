@@ -3,39 +3,67 @@
 build=$1
 
 workdir=$(dirname $(readlink -e $0))
-
 . $workdir/.env
 
+temp=$workdir/build
+
+options="all"
+for line in "${images[@]}"; do
+    imginfo=($(echo "$line"|tr ',' ' '))        
+    NAME=${imginfo[0]} 
+    options="${options}\n$NAME"
+done
+
+
+if [[ -z $(echo -e "$options"|grep "^$build\$") ]]; then
+  echo "USAGE: $0 ($(echo -ne $options|tr '\n' '|'))"
+  exit 1
+fi
+
+
+
+[ ! -d "$temp/.images" ] && mkdir -p "$temp/.images"
 for line in "${images[@]}"; do
     imginfo=($(echo "$line"|tr ',' ' '))
-
-    NAME=${imginfo[0]}    
-    [[ -n $build ]] && [[ $NAME != $build ]] && continue    
-    PROFILE=${imginfo[1]}
-    url=${imginfo[2]}
-
-    echo "Building $NAME using profile $PROFILE from $url"
-    img=$(basename $url)
-    imagebuilder="$workdir/.builder/$img"
     
-    [[ ! -d "$workdir/.builder" ]] && mkdir "$workdir/.builder"
+    NAME=${imginfo[0]} 
+    [[ $build != 'all' ]] && [[ $build != $NAME ]] && continue
+    PROFILE=${imginfo[1]}
+    build_type=${imginfo[2]}
+    ROOTFS_PARTSIZE=${imginfo[3]}
+    url=${imginfo[4]}
+    
+
+    buildir="$workdir/build/$NAME"
+
+    echo -e "***** Building $build_type $NAME using profile $PROFILE from $url *****\n"
+    
+    img=$(basename $url)
+    imagebuilder="$temp/.images/$img"
     
     [[ ! -f $imagebuilder ]] && wget $url -O $imagebuilder
     
-    buildir="$workdir/build/$NAME"
-    [[ ! -d $buildir ]] && mkdir -p "$buildir" && [[ -z $(ls -1 "$buildir") ]] && \
+    
+    [[ ! -d "$buildir" ]] && mkdir -p "$buildir"
+
+    [[ -z $(ls -1 "$buildir") ]] && \
     tar xvf $imagebuilder --strip-components=1 -C $buildir #extract files
 
     #update config
-    sed -r "s/(CONFIG_TARGET_KERNEL_PARTSIZE)=.*/\1=$KERNEL_PARTSIZE/" -i $buildir/.config
+    [[ $ROOTFS_PARTSIZE -gt 0 ]] && \
     sed -r "s/(CONFIG_TARGET_ROOTFS_PARTSIZE)=.*/\1=$ROOTFS_PARTSIZE/" -i $buildir/.config
     sed -r "s/^(CONFIG_GRUB_TIMEOUT)=(.*)/\1=$GRUB_TIMEOUT/" -i $buildir/.config
 
-    #build image
-    cd "$buildir" && \
-    make image PROFILE=$PROFILE PACKAGES="$(echo $PACKAGES|xargs)"
-
-    if [[ -n $build && -z $PROFILE ]]; then
-        echo "Build name $build not found"
+    #build image    
+    if [[ $build_type = 'basic' ]]; then
+        PACKAGES=$(echo $PACKAGES_BASIC|xargs)
+    elif [[ $build_type = 'full' ]]; then
+        PACKAGES=$(echo "$PACKAGES_BASIC $PACKAGES_EXTRA"|xargs)
     fi
+
+    cd "$buildir" && \
+    make image PROFILE=$PROFILE PACKAGES=$PACKAGES
+    
+
+    
 done
