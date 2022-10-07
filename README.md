@@ -1,4 +1,4 @@
-# OpenWRT ImageBuilder for NanoPi-R4S and X86-64
+# OpenWRT ImageBuilder for NanoPi-R4S, WNDR3800 and X86-64
 
 Custom OpenWRT firmware for NanoPi-R4s and x86_64 with the following packages.
 
