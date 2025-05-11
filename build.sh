@@ -47,7 +47,7 @@ for line in "${images[@]}"; do
     [[ ! -d "$buildir" ]] && mkdir -p "$buildir"
 
     [[ -z $(ls -1 "$buildir") ]] && \
-    tar xvf $imagebuilder --strip-components=1 -C $buildir #extract files
+    tar --use-compress-program=unzstd -xvf $imagebuilder --strip-components=1 -C $buildir #extract files
 
     #update config
     [[ $ROOTFS_PARTSIZE -gt 0 ]] && \
