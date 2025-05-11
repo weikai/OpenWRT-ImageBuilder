@@ -7,6 +7,7 @@ workdir=$(dirname $(readlink -e $0))
 
 temp=$workdir/build
 
+
 options="all"
 for line in "${images[@]}"; do
     imginfo=($(echo "$line"|tr ',' ' '))        
@@ -27,6 +28,8 @@ for line in "${images[@]}"; do
     imginfo=($(echo "$line"|tr ',' ' '))
     
     NAME=${imginfo[0]} 
+    image_dir="$workdir/images/$NAME/$(date '+%Y-%m-%d')"
+
     [[ $build != 'all' ]] && [[ $build != $NAME ]] && continue
     PROFILE=${imginfo[1]}
     build_type=${imginfo[2]}
@@ -62,7 +65,10 @@ for line in "${images[@]}"; do
     fi
 
     cd "$buildir" && \
-    make image PROFILE=$PROFILE PACKAGES="$PACKAGES"
+    make image PROFILE=$PROFILE PACKAGES="$PACKAGES" && \
+    mkdir -p "$image_dir" && \
+    find bin -type f \( -name '*.img*' -or -name '*.bin' \) -exec cp {} "$image_dir/" \;
+    
     
     
 
