@@ -65,11 +65,15 @@ for line in "${images[@]}"; do
     fi
 
     cd "$buildir" && \
+    echo -e "make image PROFILE=$PROFILE PACKAGES='$PACKAGES'\n" && \
     make image PROFILE=$PROFILE PACKAGES="$PACKAGES" && \
     mkdir -p "$image_dir" && \
     find bin -type f \( -name '*.img*' -or -name '*.bin' \) -exec cp {} "$image_dir/" \;
     
-    
+    if [[ $? -ne 0 ]]; then
+     echo -e "\nmake image PROFILE=$PROFILE PACKAGES='$PACKAGES'\n"
+     echo "Build failed"
+    fi
     
 
     
