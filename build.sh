@@ -7,6 +7,7 @@ workdir=$(dirname $(readlink -e $0))
 
 temp=$workdir/build
 
+#set -x
 
 options="all"
 for line in "${images[@]}"; do
